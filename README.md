@@ -5,7 +5,7 @@ Graphical ICMP Monitoring Tool
 
 |Before|After|
 |---|---|
-![](https://github.com/YohKmb/adso/blob/master/.demo/before.png) ![](https://github.com/YohKmb/adso/blob/master/.demo/after.png)
+![](https://github.com/YohKmb/adso/blob/master/.demo/before.png)![](https://github.com/YohKmb/adso/blob/master/.demo/after.png)
 
 ### Description
 
