@@ -3,7 +3,7 @@ Adso (beta)
 
 Graphical ICMP Monitoring Tool
 
-![demo1](https://github.com/YohKmb/adso/blob/master/.demo/before.png)
+<img src="https://github.com/YohKmb/adso/blob/master/.demo/before.png" alt="img-before" title="img-before" width="50%">
 
 ### Description
 
