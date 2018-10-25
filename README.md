@@ -1,11 +1,10 @@
 Adso (beta)
 ====
 
-Web resource tracker/visualizer utilizing Chrome Headless Browsser
+Web resource tracker/visualizer utilizing Chrome Headless Browser
 
-|Before|After|
-|---|---|
-![](https://github.com/YohKmb/adso/blob/master/.demo/before.png)|![](https://github.com/YohKmb/adso/blob/master/.demo/after.png)
+
+![Demo](https://github.com/YohKmb/adso/blob/master/.demo/after.png)
 
 ### Description
 
@@ -17,41 +16,27 @@ This might be beneficial for data compriance checking such like GDRP.
 
 I named this after a main character who appeared in "The Name of The Rose" written by Umberto Eco. Adso is an apprentice monk in medieval age. He challenges a hidden labyrinth in monastery and struggles and solve many traps and enigmas in the dungeon.
 
- - watchman : 
 
-    As demonstrated in the animation above, you can dynamically monitor results and statistics of them of ICMP health-checking to multiple devices.
-    Targets of ICMP can be editored from web-base gui. (You can directly modify json file, if you want.)
-    
-    As you guess, this tool was named after a certain great graphic novel.
-    
-    [Usage]
-    
-        1) Execute "watchman" script with an administrator privilege.
-        2) Open your favarite web-browser. (Please not so obsolete version...)
-        3) Access to http://localhost:5000/main or http://localhost:5000/ .
-        4) Play like the demo animation above.
+### Usage
+
+    1) Launch Chrome browser in the headless-mode with CLI. (ex. Chrome --remote-debugging-port=9222)
+    2) Execute the "mainapp.js" file with node interpreter. 
+    3) Open another web-browser and access http://localhost:1337.
+    4) Supply a URL which you want to examine.
+    5) Push the play-button beside the URL field.
+    6) Click any resource icons and check details and the reason why it was accessed.
       
- - lib/pinger.py : 
-
-    Pure-Python ICMP CLI utility tool. At this moment, this can work only on *nix platmfoms. (related to socket allocatin problem)
-
-
 ### Notes
 
- - Administrator Privilege
+ - Windows Firewall
 
-    You have to execute scripts in this repository with an administor privilege.
-    It's required to open sockets.
-
- - Future Support for Windows Platforms
-
-    At this moment, this package is in beta-version. I'll support windows platforms and ping-springboards via ssh connections.
-    It's also planned to support IPv6.
+    This tool tries to connect Chroome Headless process using TCP/9222. So you have to allow TCP/9222 access to localhost in the Windows Firewall configuration.
 
 
 ### Requirement
 
- - Flask >= 0.10.1
+ - Chrome >= 59
+ - NodeJs >= 8.x
 
 
 ### Licence
