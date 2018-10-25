@@ -1,0 +1,252 @@
+{% extends "layout.html" %}
+
+
+{% block body %}
+
+<div class="box diag_topology" id="mynetwork" style="background-color: #e6e6e6"></div>
+<pre>Root URL: <span id="url_tracing"></span></pre>
+<!--<hr>-->
+<div id="pane_buttons">
+    <div style="width: 100%;">
+        <form id="form_root_url" onsubmit="startTracing(); return false"">
+            <button class="button-success pure-button" type="submit">
+                <i class="fas fa-play"></i>
+            </button>
+
+            <div class="button-warning pure-button">
+                <i class="fas fa-pause"></i>
+            </div>
+            <label for="input_root_url">URL: </label>
+            <input type="url" id="input_root_url" required style="width: 60%" placeholder="ex. https://some.url/path">
+
+            <div class="button-error pure-button" onclick="resetNetwork()">
+                <i class="fas fa-redo-alt"></i>
+            </div>
+        </form>
+        <!--<button class="pure-button" onclick="dumpDataset4Dev()">DevUtil</button>-->
+    </div>
+</div>
+<div id="pane_info">
+    <legend id="url_selected">http://example.com/index.html</legend>
+    <table class="pure-table-striped" id="details">
+        <colgroup span="1" class="vertical-headers">
+        <!--<colgroup span="1" class="vertical-values">-->
+        <tbody>
+        {% for propname,repesen in headersDetailTable %}
+            <tr><th scope="row">{{ repesen }}</th><td id="{{ propname }}"></td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+
+{% block post_body %}
+<script type="text/javascript">
+
+    const options = {{ vizjsOption|json|safe }}
+
+    const container = document.getElementById("mynetwork")
+    const data = {
+        nodes: new vis.DataSet([], {delay: 500}),
+        edges: new vis.DataSet([], {delay: 500})
+    }
+
+    const network = new vis.Network(container, data, options)
+    const queue = new VisjsTaskQueue()
+
+    network.on("selectNode", function (params) {
+        let selected = data.nodes.get(params.nodes[0])
+        let parser = new URL(selected.url)
+
+        console.log(selected)
+        // console.log(parser
+        updateDetailTable(selected)
+    })
+
+
+    const ws = new WebSocket("{{ wsUrl }}")
+
+    ws.onopen = function (ev) {
+        console.log("[*] Connected to the server !")
+    }
+
+    ws.onmessage = function (message) {
+        // console.log("[*] Message arrived.")
+        let cdpmessage = JSON.parse(message.data)
+        let rsrcInfo = {}
+
+        switch (cdpmessage.cmd) {
+            case "add":
+                rsrcInfo = cdpmessage.data
+                if (rsrcInfo.hasOwnProperty("id")) {
+                    addResourceInfo(rsrcInfo, data.nodes, data.edges)
+                }
+                break
+
+            case "update":
+                rsrcInfo = cdpmessage.data
+                if (rsrcInfo.hasOwnProperty("id")) {
+                    // console.log(rsrcInfo)
+                    updateResourceInfo(rsrcInfo, data.nodes, data.edges)
+                }
+                break
+
+            default:
+                break
+        }
+    }
+    
+    const startTracing = function () {
+        let url = document.getElementById("input_root_url").value
+        let msg = {cmd: "startTracing", data: url}
+
+        resetNetwork()
+        document.getElementById("url_tracing").innerText = url
+
+        try {
+            ws.send(JSON.stringify(msg))
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+
+    const getScriptSource = function (scriptId) {
+        let msg = {cmd: "getScriptSource", data: {scriptId: scriptId}}
+
+        try {
+            ws.send(JSON.stringify(msg))
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+
+    const getResponseBody = function (requestId) {
+        let msg = {cmd: "getScriptSource", data: {requestId: requestId}}
+
+        try {
+            ws.send(JSON.stringify(msg))
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+
+    const resetNetwork = function () {
+        data.nodes.clear()
+        data.edges.clear()
+        document.getElementById("input_root_url").value = ""
+        document.getElementById("url_tracing").innerText = ""
+    }
+
+    const updateDetailTable = function (node) {
+        try {
+            document.getElementById("url_selected").innerText = node.url
+
+            const cells = document.querySelectorAll("#pane_info td")
+            cells.forEach(function (cell) {
+                cell.innerText = node[cell.id] || "n/a"
+            })
+
+        } catch (err) {
+            console.warn(err)
+        }
+    }
+
+    // const initiatorToString = function (linenum, statement, fromId) {
+    //     if (! linenum) {
+    //         return statement
+    //     }
+    //
+    //     let paddednum = ("00000" + linenum).slice(-5)
+    //     return `${paddednum}: ${statement}`
+    // }
+
+    const addResourceInfo = function (rsrc, nodes, edges) {
+        let statements = rsrc.statements
+
+        try {
+            if (! nodes.getIds().includes(rsrc.id)){
+                const parsedUrl = new URL(rsrc.url)
+                Object.assign(rsrc, {
+                    pathname: parsedUrl.pathname,
+                    host: parsedUrl.host,
+                    search: parsedUrl.search,
+                    protocol: parsedUrl.protocol
+                })
+
+                try {
+                    queue.addNode(rsrc, nodes)
+                } catch (err) {
+                    console.warn(err)
+                }
+            }
+
+        } catch (err) {
+            console.warn(err)
+        }
+        
+        statements.forEach(function (statement) {
+            let fromId = statement.fromId
+            let eid = fromId + "-" + rsrc.id
+            if (! edges.getIds().includes(eid)) {
+                let edge = {from: fromId, to: rsrc.id, id: eid, arrows: "to"}
+                if (rsrc.statements) {
+                    let iniType = statement.type || "n/a"
+                    let iniProto = rsrc.protocol || "n/a"
+                    edge["label"] = `${iniType} | ${iniProto}`
+                }
+                try {
+                    queue.addEdge(edge, edges)
+                } catch (err) {
+                    console.warn(err)
+                }
+            }
+        })
+
+        if (statements.hasOwnProperty("fromIds") && statements.fromIds !== null) {
+            try {
+                let from_arr = statements.fromIds
+
+                from_arr.forEach(function (from) {
+                    // console.log(from)
+                    let eid = from + "-" + rsrc.id
+                    if (! edges.getIds().includes(eid)) {
+                        let edge = {from: from, to: rsrc.id, id: eid, arrows: "to"}
+                        if (rsrc.statements) {
+                            let iniType = rsrc.statements.type || "n/a"
+                            let iniProto = rsrc.protocol || "n/a"
+                            edge["label"] = `${iniType} | ${iniProto}`
+                        }
+                        queue.addEdge(edge, edges)
+                    }
+                })
+
+            } catch (err) {
+                console.warn(err)
+            }
+        }
+        queue.startTasks()
+    }
+
+    const updateResourceInfo = function (rsrc, nodes, edges) {
+        // let statements = rsrc.statements
+
+        try {
+            if (nodes.getIds().includes(rsrc.id)){
+                let node = nodes.get(rsrc.id)
+                Object.assign(rsrc, node)
+
+                try {
+                    queue.updateNode(rsrc, nodes)
+                } catch (err) {
+                    console.warn(err)
+                }
+            }
+        } catch (err) {
+            console.warn(err)
+        }
+        queue.startTasks()
+    }
+    
+</script>
+{% endblock %}

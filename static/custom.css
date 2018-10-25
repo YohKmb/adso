@@ -1,0 +1,76 @@
+.diag_topology {
+    width: 100%;
+    height: 400px;
+}
+
+.button-success {
+    background: rgb(28, 184, 65); /* this is a green */
+    margin: 5px;
+}
+
+.button-error {
+    background: rgb(202, 60, 60); /* this is a maroon */
+    margin: 5px;
+}
+
+.button-warning {
+    background: rgb(223, 117, 20); /* this is an orange */
+    margin: 5px;
+}
+
+#mynetwork .vis-button.vis-up {
+    background: url(./angle-up.svg) center center no-repeat;
+}
+
+#mynetwork .vis-button.vis-zoomIn {
+    background: url(./search-plus.svg) center center no-repeat;
+    background-size: 70%;
+}
+
+#mynetwork .vis-button.vis-zoomOut {
+    background: url(./search-minus.svg) center center no-repeat;
+    background-size: 70%;
+}
+
+#mynetwork .vis-button.vis-zoomOut {
+    background: url(./search-minus.svg) center center no-repeat;
+    background-size: 70%;
+}
+
+#mynetwork .vis-button.vis-zoomExtends {
+    background: url(./expand-arrows-alt.svg) center center no-repeat;
+    background-size: 60%;
+}
+
+#pane_info table {
+    width: 100%;
+}
+
+#pane_info table td, #pane_info table th {
+    /*text-align: left;*/
+    font-size: 0.8rem;
+    /*overflow: hidden;*/
+}
+
+.vertical-headers {
+    background-color: #e0e0e0;
+    color: #000;
+    text-align: left;
+    vertical-align: bottom;
+    width: 15%;
+}
+
+.main-logo {
+    background: url(./mainlogo.svg) center center no-repeat;
+    background-size: 100px 100px;
+    background-position: center 30px;
+    /*width: 100px;*/
+    /*height: 100px;*/
+    /*background-size: 60%;*/
+}
+
+
+/*#pane_info .pure-table td {*/
+    /*background-color: white;*/
+    /*font-size: x-small;*/
+/*}*/
