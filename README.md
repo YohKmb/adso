@@ -1,7 +1,7 @@
 Adso (beta)
 ====
 
-Graphical ICMP Monitoring Tool
+Web resource tracker/visualizer utilizing Chrome Headless Browsser
 
 |Before|After|
 |---|---|
@@ -9,9 +9,13 @@ Graphical ICMP Monitoring Tool
 
 ### Description
 
-This repository offers you a browser-based ICMP monitoring tool "watchman" and CLI-based ping utility "lib/pinger.py".
+With this tool, you can identify numerous web resources when you land on a web page.
 
-The later is internally used in "watchman".
+I wrote this codes for the purpose related cyber-security analysis. (ex. Compromised sites, phishing sites, ad-frauding. etc.)
+
+This might be beneficial for data compriance checking such like GDRP.
+
+I named this after a main character who appeared in "The Name of The Rose" written by Umberto Eco. Adso is an apprentice monk in medieval age. He challenges a hidden labyrinth in monastery and struggles and solve many traps and enigmas in the dungeon.
 
  - watchman : 
 
