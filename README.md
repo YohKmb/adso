@@ -4,7 +4,7 @@ Adso (beta)
 Web resource tracker/visualizer utilizing Chrome Headless Browser
 
 
-![Demo](https://github.com/YohKmb/adso/blob/master/.demo/after.png)
+![Demo](https://github.com/YohKmb/adso/blob/master/.demo/adso-demo.gif)
 
 ### Description
 
